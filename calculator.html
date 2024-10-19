@@ -133,8 +133,11 @@
                              .replace(/divided by/g, '/')
                              .replace(/clear/g, 'C');
 
-            // Check if the command is to stop
-            if (command.includes('stop')) {
+            // Check if the command is to close the calculator
+            if (command.includes('close calculator')) {
+                status.textContent = "Closing calculator...";
+                window.close(); // Close the window
+            } else if (command.includes('stop')) {
                 status.textContent = "Stopped listening.";
                 recognition.stop(); // Stop recognition
             } else {
