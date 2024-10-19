@@ -36,10 +36,10 @@ function executeCommand(command) {
     switch (command) {
         case "open notepad":
             window.open("notepad.html"); // Assuming you have a notepad.html page
-            break;
+          
         case "open calculator":
             window.open("calculator.html"); // Assuming you have a calculator.html page
-            break;
+            
         case "stop":
             output.textContent = "Stopped listening.";
             recognition.stop(); // Stop recognition
