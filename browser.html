@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Controlled Browser</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #output { margin: 20px; font-size: 24px; }
+        #btn { padding: 10px 20px; font-size: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Voice Controlled Browser</h1>
+    <div id="output">Say "open" followed by a website name.</div>
+    <button id="btn">Start Listening</button>
+
+    <script>
+        const output = document.getElementById('output');
+        const btn = document.getElementById('btn');
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        const speechSynthesis = window.speechSynthesis;
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event) => {
+            const command = event.results[0][0].transcript.toLowerCase();
+            output.textContent = `You said: "${command}"`;
+
+            if (command.startsWith('open')) {
+                const website = command.replace('open ', '');
+                const url = website.includes('http') ? website : 'https://' + website;
+                window.open(url);
+                speak(`Opening ${website}`);
+            } else {
+                speak('Please say a command starting with "open".');
+            }
+        };
+
+        recognition.onend = () => {
+            btn.disabled = false;
+        };
+
+        btn.onclick = () => {
+            btn.disabled = true;
+            recognition.start();
+            output.textContent = 'Listening...';
+        };
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        }
+    </script>
+
+</body>
+</html>
