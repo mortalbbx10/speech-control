@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Controlled Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #status {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voice Controlled Web Navigation</h1>
+    <button id="start-button">Start Listening</button>
+    <p id="status">Status: Not Listening</p>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const statusText = document.getElementById('status');
+
+        // Check if the browser supports speech recognition
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Sorry, your browser does not support speech recognition. Please try Chrome.");
+        } else {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                statusText.innerText = "Status: Listening...";
+            };
+
+            recognition.onresult = function(event) {
+                const command = event.results[0][0].transcript.toLowerCase();
+                statusText.innerText = "You said: " + command;
+
+                // Define voice commands for navigation
+                switch (command) {
+                    case 'go to google':
+                        window.location.href = 'https://www.google.com';
+                        break;
+                    case 'go to youtube':
+                        window.location.href = 'https://www.youtube.com';
+                        break;
+                    case 'go to facebook':
+                        window.location.href = 'https://www.facebook.com';
+                        break;
+                    case 'go to twitter':
+                        window.location.href = 'https://www.twitter.com';
+                        break;
+                    case 'go back':
+                        window.history.back();
+                        break;
+                    case 'go forward':
+                        window.history.forward();
+                        break;
+                    default:
+                        statusText.innerText = "Command not recognized.";
+                }
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Error occurred in recognition: " + event.error);
+            };
+
+            startButton.onclick = function() {
+                recognition.start();
+            };
+        }
+    </script>
+</body>
+</html>
