@@ -12,7 +12,7 @@
 <body>
 
     <h1>Voice Controlled Browser</h1>
-    <div id="output">Say "open" followed by a website name.</div>
+    <div id="output">Say a website followed by a search query.</div>
 
     <script>
         const output = document.getElementById('output');
@@ -27,19 +27,28 @@
             const command = event.results[0][0].transcript.toLowerCase();
             output.textContent = `You said: "${command}"`;
 
-            if (command.startsWith('open')) {
-                const website = command.replace('open ', '');
-                const url = website.includes('http') ? website : 'https://' + website;
-                window.open(url);
-                speak(`Opening ${website}`);
+            const parts = command.split(' ');
+            const url = parts[0];
+            const searchQuery = parts.slice(1).join(' ');
+
+            if (url.includes('.com')) {
+                const finalUrl = url.includes('http') ? url : 'https://' + url;
+
+                // If there's a search query, perform a search
+                if (searchQuery) {
+                    window.open(`${finalUrl}/search?q=${encodeURIComponent(searchQuery)}`);
+                    speak(`Searching for ${searchQuery} on ${url}`);
+                } else {
+                    window.open(finalUrl);
+                    speak(`Opening ${url}`);
+                }
             } else {
-                speak('Please say a command starting with "open".');
+                speak('Please say a valid website followed by a search query.');
             }
         };
 
         recognition.onend = () => {
-            // Restart recognition automatically
-            recognition.start();
+            recognition.start(); // Restart recognition automatically
         };
 
         window.onload = () => {
