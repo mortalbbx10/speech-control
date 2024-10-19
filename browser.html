@@ -7,18 +7,15 @@
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         #output { margin: 20px; font-size: 24px; }
-        #btn { padding: 10px 20px; font-size: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <h1>Voice Controlled Browser</h1>
     <div id="output">Say "open" followed by a website name.</div>
-    <button id="btn">Start Listening</button>
 
     <script>
         const output = document.getElementById('output');
-        const btn = document.getElementById('btn');
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         const speechSynthesis = window.speechSynthesis;
 
@@ -41,13 +38,13 @@
         };
 
         recognition.onend = () => {
-            btn.disabled = false;
+            // Restart recognition automatically
+            recognition.start();
         };
 
-        btn.onclick = () => {
-            btn.disabled = true;
-            recognition.start();
+        window.onload = () => {
             output.textContent = 'Listening...';
+            recognition.start();
         };
 
         function speak(text) {
