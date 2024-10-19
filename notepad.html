@@ -44,7 +44,6 @@
 
     <h1>Notepad</h1>
     <textarea id="notepad" placeholder="Type your notes here..."></textarea>
-    <button id="speech-btn">Start Speaking</button>
     <p id="status"></p>
 
     <script>
@@ -71,10 +70,15 @@
         }
 
         recognition.onresult = (event) => {
-            const spokenText = event.results[0][0].transcript;
-            textarea.value += spokenText + " "; // Append spoken text to textarea
-            status.textContent = "You said: " + spokenText;
-            // Restart listening after getting a result
+            const spokenText = event.results[0][0].transcript.toLowerCase();
+            // Check for the close command
+            if (spokenText.includes("close notepad")) {
+                window.close(); // Close the window
+            } else {
+                textarea.value += spokenText + " "; // Append spoken text to textarea
+                status.textContent = "You said: " + spokenText;
+            }
+            // Restart listening after processing the result
             startListening();
         };
 
