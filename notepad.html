@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notepad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Notepad</h1>
+    <textarea id="notepad" placeholder="Type your notes here..."></textarea>
+    <button id="speech-btn">Start Speaking</button>
+    <p id="status"></p>
+
+    <script>
+        // Load saved notes on page load (if needed for any other functionality)
+        window.onload = function() {
+            // Start listening automatically on page load
+            startListening();
+        }
+
+        // Check if the browser supports the Web Speech API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        const status = document.getElementById("status");
+        const textarea = document.getElementById("notepad");
+
+        recognition.interimResults = false; // Final results only
+        recognition.lang = "en-US"; // Set language
+        recognition.maxAlternatives = 1; // Limit alternatives
+
+        // Function to start listening
+        function startListening() {
+            recognition.start();
+            status.textContent = "Listening...";
+        }
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript;
+            textarea.value += spokenText + " "; // Append spoken text to textarea
+            status.textContent = "You said: " + spokenText;
+            // Restart listening after getting a result
+            startListening();
+        };
+
+        recognition.onerror = (event) => {
+            status.textContent = `Error occurred in recognition: ${event.error}`;
+            // Restart listening on error
+            startListening();
+        };
+
+    </script>
+
+</body>
+</html>
