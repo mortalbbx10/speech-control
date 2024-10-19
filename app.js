@@ -42,7 +42,7 @@ function executeCommand(command) {
             window.close();
             break;
         case "open browser":
-            window.open("Internetbrowser.html"); 
+            window.open("browser.html"); 
             break;    
         default:
             output.textContent += " - Command not recognized.";
