@@ -47,19 +47,17 @@
     <p id="status"></p>
 
     <script>
-        // Check if the browser supports the Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         const status = document.getElementById("status");
         const textarea = document.getElementById("notepad");
 
-        recognition.interimResults = false; // Final results only
-        recognition.lang = "en-US"; // Set language
-        recognition.maxAlternatives = 1; // Limit alternatives
+        recognition.interimResults = false; 
+        recognition.lang = "hi-IN"; 
+        recognition.maxAlternatives = 1; 
 
-        let isListening = true; // Flag to manage listening state
+        let isListening = true; 
 
-        // Function to start listening
         function startListening() {
             if (isListening) {
                 recognition.start();
@@ -67,33 +65,103 @@
             }
         }
 
-        recognition.onresult = (event) => {
-            const spokenText = event.results[0][0].transcript.toLowerCase();
+        function transliterateToRomanizedHindi(hindiText) {
+            const romanizedMap = {
+                'नमस्ते': 'namaste',
+                'कैसे': 'kaise',
+                'हो': 'ho',
+                'है': 'hai',
+                'आप': 'aap',
+                'मैं': 'main',
+                'क्या': 'kya',
+                'और': 'aur',
+                'यह': 'yeh',
+                'वह': 'vah',
+                'खाना': 'khana',
+                'पानी': 'pani',
+                'सूरज': 'suraj',
+                'चाँद': 'chaand',
+                'तारे': 'tare',
+                'सुबह': 'subah',
+                'शाम': 'shaam',
+                'रात': 'raat',
+                'धन्यवाद': 'dhanyavaad',
+                'शुक्रिया': 'shukriya',
+                'मुझे': 'mujhe',
+                'तुम': 'tum',
+                'वो': 'wo',
+                'सच': 'sach',
+                'झूठ': 'jhoot',
+                'घर': 'ghar',
+                'बाहर': 'baahar',
+                'स्कूल': 'school',
+                'पढ़ाई': 'padhai',
+                'बच्चे': 'bacche',
+                'दोस्त': 'dost',
+                'परिवार': 'parivaar',
+                'सफर': 'safar',
+                'खुश': 'khush',
+                'दुखी': 'dukhi',
+                'बुरा': 'bura',
+                'अच्छा': 'accha',
+                'बड़ा': 'bada',
+                'छोटा': 'chota',
+                'सीखना': 'seekhna',
+                'सिखाना': 'sikhana',
+                'जाना': 'jana',
+                'आना': 'aana',
+                'सुनना': 'sunna',
+                'देखना': 'dekhna',
+                'करना': 'karna',
+                'चला गया': 'chala gaya',
+                'आने वाला': 'aane wala',
+                'कल': 'kal',
+                'आज': 'aaj',
+                'परसों': 'parson',
+                'सुबह का': 'subah ka',
+                'शाम का': 'shaam ka',
+                'चाय': 'chai',
+                'कॉफी': 'coffee',
+                'फल': 'phal',
+                'सब्जी': 'sabji',
+                'प्याज': 'pyaaz',
+                'आलू': 'aaloo',
+                'मसाले': 'masale',
+                'प्यार': 'pyaar',
+                'सपना': 'sapna',
+                'खुशबू': 'khushboo',
+                // Add more mappings as needed
+            };
 
-            // Check for the close command
+            return hindiText.split(' ')
+                .map(word => romanizedMap[word] || word)
+                .join(' ');
+        }
+
+        recognition.onresult = (event) => {
+            const spokenText = event.results[0][0].transcript; 
+
             if (spokenText.includes("close notepad")) {
-                window.close(); // Close the window
+                window.close(); 
             } else if (spokenText.includes("stop")) {
-                isListening = false; // Stop listening
+                isListening = false; 
                 status.textContent = "Stopped listening.";
-                return; // Exit the function
+                return; 
             } else {
-                textarea.value += spokenText + " "; // Append spoken text to textarea
-                status.textContent = "You said: " + spokenText;
+                const romanizedText = transliterateToRomanizedHindi(spokenText); 
+                textarea.value += romanizedText + " "; 
+                status.textContent = "You said: " + romanizedText;
             }
 
-            // Stop listening for 50ms before restarting
             recognition.stop();
-            setTimeout(startListening, 50); // Restart listening after 50ms
+            setTimeout(startListening, 50);
         };
 
         recognition.onerror = (event) => {
             status.textContent = `Error occurred in recognition: ${event.error}`;
-            // Restart listening on error
             startListening();
         };
 
-        // Start listening automatically on page load
         window.onload = startListening;
 
     </script>
