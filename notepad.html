@@ -47,12 +47,6 @@
     <p id="status"></p>
 
     <script>
-        // Load saved notes on page load (if needed for any other functionality)
-        window.onload = function() {
-            // Start listening automatically on page load
-            startListening();
-        }
-
         // Check if the browser supports the Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -63,23 +57,34 @@
         recognition.lang = "en-US"; // Set language
         recognition.maxAlternatives = 1; // Limit alternatives
 
+        let isListening = true; // Flag to manage listening state
+
         // Function to start listening
         function startListening() {
-            recognition.start();
-            status.textContent = "Listening...";
+            if (isListening) {
+                recognition.start();
+                status.textContent = "Listening...";
+            }
         }
 
         recognition.onresult = (event) => {
             const spokenText = event.results[0][0].transcript.toLowerCase();
+
             // Check for the close command
             if (spokenText.includes("close notepad")) {
                 window.close(); // Close the window
+            } else if (spokenText.includes("stop")) {
+                isListening = false; // Stop listening
+                status.textContent = "Stopped listening.";
+                return; // Exit the function
             } else {
                 textarea.value += spokenText + " "; // Append spoken text to textarea
                 status.textContent = "You said: " + spokenText;
             }
-            // Restart listening after processing the result
-            startListening();
+
+            // Stop listening for 50ms before restarting
+            recognition.stop();
+            setTimeout(startListening, 50); // Restart listening after 50ms
         };
 
         recognition.onerror = (event) => {
@@ -87,6 +92,9 @@
             // Restart listening on error
             startListening();
         };
+
+        // Start listening automatically on page load
+        window.onload = startListening;
 
     </script>
 
