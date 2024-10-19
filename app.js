@@ -41,6 +41,9 @@ function executeCommand(command) {
         case "close":
             window.close();
             break;
+        case "open browser":
+            window.open("internetbrowser.html"); // Assuming you have a notepad.html page
+            break;    
         default:
             output.textContent += " - Command not recognized.";
     }
