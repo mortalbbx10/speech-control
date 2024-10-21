@@ -3,167 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notepad</title>
+    <title>Voice-Controlled Notepad</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 300px;
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { text-align: center; }
+        #notepad { width: 100%; height: 300px; padding: 10px; font-size: 18px; }
+        #status { margin-top: 10px; font-size: 18px; text-align: center; }
+        button { margin-top: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h1>Notepad</h1>
-    <textarea id="notepad" placeholder="Type your notes here..."></textarea>
-    <p id="status"></p>
+    <h1>Voice-Controlled Notepad</h1>
+    <textarea id="notepad" placeholder="Your dictated notes will appear here..."></textarea>
+    <div id="status">Click "Start Dictating" to begin.</div>
+    <button onclick="startDictation()">Start Dictating</button>
 
     <script>
+        // Check for browser support for Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        const status = document.getElementById("status");
-        const textarea = document.getElementById("notepad");
 
-        recognition.interimResults = false; 
-        recognition.lang = "hi-IN"; 
-        recognition.maxAlternatives = 1; 
+        recognition.continuous = true; // Keep recognizing speech until stopped
+        recognition.interimResults = false; // Only show final results
+        recognition.lang = 'en-US'; // Set language to English
 
-        let isListening = true; 
-
-        function startListening() {
-            if (isListening) {
-                recognition.start();
-                status.textContent = "Listening...";
-            }
-        }
-
-        function transliterateToRomanizedHindi(hindiText) {
-            const romanizedMap = {
-                'नमस्ते': 'namaste',
-                'कैसे': 'kaise',
-                'हो': 'ho',
-                'है': 'hai',
-                'आप': 'aap',
-                'मैं': 'main',
-                'क्या': 'kya',
-                'और': 'aur',
-                'यह': 'yeh',
-                'वह': 'vah',
-                'खाना': 'khana',
-                'पानी': 'pani',
-                'सूरज': 'suraj',
-                'चाँद': 'chaand',
-                'तारे': 'tare',
-                'सुबह': 'subah',
-                'शाम': 'shaam',
-                'रात': 'raat',
-                'धन्यवाद': 'dhanyavaad',
-                'शुक्रिया': 'shukriya',
-                'मुझे': 'mujhe',
-                'तुम': 'tum',
-                'वो': 'wo',
-                'सच': 'sach',
-                'झूठ': 'jhoot',
-                'घर': 'ghar',
-                'बाहर': 'baahar',
-                'स्कूल': 'school',
-                'पढ़ाई': 'padhai',
-                'बच्चे': 'bacche',
-                'दोस्त': 'dost',
-                'परिवार': 'parivaar',
-                'सफर': 'safar',
-                'खुश': 'khush',
-                'दुखी': 'dukhi',
-                'बुरा': 'bura',
-                'अच्छा': 'accha',
-                'बड़ा': 'bada',
-                'छोटा': 'chota',
-                'सीखना': 'seekhna',
-                'सिखाना': 'sikhana',
-                'जाना': 'jana',
-                'आना': 'aana',
-                'सुनना': 'sunna',
-                'देखना': 'dekhna',
-                'करना': 'karna',
-                'चला गया': 'chala gaya',
-                'आने वाला': 'aane wala',
-                'कल': 'kal',
-                'आज': 'aaj',
-                'परसों': 'parson',
-                'सुबह का': 'subah ka',
-                'शाम का': 'shaam ka',
-                'चाय': 'chai',
-                'कॉफी': 'coffee',
-                'फल': 'phal',
-                'सब्जी': 'sabji',
-                'प्याज': 'pyaaz',
-                'आलू': 'aaloo',
-                'मसाले': 'masale',
-                'प्यार': 'pyaar',
-                'सपना': 'sapna',
-                'खुशबू': 'khushboo',
-                // Add more mappings as needed
-            };
-
-            return hindiText.split(' ')
-                .map(word => romanizedMap[word] || word)
-                .join(' ');
-        }
+        const notepad = document.getElementById('notepad');
+        const status = document.getElementById('status');
 
         recognition.onresult = (event) => {
-            const spokenText = event.results[0][0].transcript; 
-
-            if (spokenText.includes("close notepad")) {
-                window.close(); 
-            } else if (spokenText.includes("stop")) {
-                isListening = false; 
-                status.textContent = "Stopped listening.";
-                return; 
-            } else {
-                const romanizedText = transliterateToRomanizedHindi(spokenText); 
-                textarea.value += romanizedText + " "; 
-                status.textContent = "You said: " + romanizedText;
-            }
-
-            recognition.stop();
-            setTimeout(startListening, 50);
+            const transcript = event.results[event.results.length - 1][0].transcript;
+            notepad.value += transcript + ' ';
         };
 
         recognition.onerror = (event) => {
-            status.textContent = `Error occurred in recognition: ${event.error}`;
-            startListening();
+            status.textContent = 'Error occurred: ' + event.error;
         };
 
-        window.onload = startListening;
+        recognition.onstart = () => {
+            status.textContent = 'Listening...';
+        };
 
+        recognition.onend = () => {
+            status.textContent = 'Dictation stopped.';
+        };
+
+        function startDictation() {
+            recognition.start();
+            status.textContent = 'Listening...';
+        }
     </script>
 
 </body>
