@@ -34,7 +34,7 @@ recognition.onerror = (event) => {
     // Restart recognition after a 5ms delay in case of error
     setTimeout(() => {
         recognition.start();
-    }, 5);
+    }, 50);
 };
 
 // Function to execute commands
