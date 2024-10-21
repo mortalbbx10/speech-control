@@ -21,10 +21,10 @@ recognition.onresult = (event) => {
     // Stop listening after the command is executed
     recognition.stop();
 
-    // Restart listening after a 5ms delay
+    // Restart listening after a 50ms delay
     setTimeout(() => {
         recognition.start();
-    }, 5);
+    }, 50);
 };
 
 // Handle errors
