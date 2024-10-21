@@ -9,22 +9,20 @@
         h1 { text-align: center; }
         #notepad { width: 100%; height: 300px; padding: 10px; font-size: 18px; }
         #status { margin-top: 10px; font-size: 18px; text-align: center; }
-        button { margin-top: 10px; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <h1>Voice-Controlled Notepad</h1>
     <textarea id="notepad" placeholder="Your dictated notes will appear here..."></textarea>
-    <div id="status">Click "Start Dictating" to begin.</div>
-    <button onclick="startDictation()">Start Dictating</button>
+    <div id="status">Loading...</div>
 
     <script>
         // Check for browser support for Web Speech API
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
 
-        recognition.continuous = true; // Keep recognizing speech until stopped
+        recognition.continuous = false; // Set to false to listen only during speech
         recognition.interimResults = false; // Only show final results
         recognition.lang = 'en-US'; // Set language to English
 
@@ -32,8 +30,14 @@
         const status = document.getElementById('status');
 
         recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            notepad.value += transcript + ' ';
+            const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+            
+            if (transcript === "close notepad") {
+                status.textContent = "Closing notepad...";
+                window.close(); // Close the window if "close notepad" is spoken
+            } else {
+                notepad.value += transcript + ' ';
+            }
         };
 
         recognition.onerror = (event) => {
@@ -45,13 +49,17 @@
         };
 
         recognition.onend = () => {
-            status.textContent = 'Dictation stopped.';
+            status.textContent = 'Stopped listening. Restarting in 20ms...';
+            // Restart listening after a 20ms delay
+            setTimeout(() => {
+                recognition.start();
+            }, 20);
         };
 
-        function startDictation() {
+        // Start listening as soon as the page loads
+        window.onload = () => {
             recognition.start();
-            status.textContent = 'Listening...';
-        }
+        };
     </script>
 
 </body>
