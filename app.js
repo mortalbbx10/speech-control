@@ -17,16 +17,24 @@ recognition.onresult = (event) => {
     const command = event.results[0][0].transcript.toLowerCase();
     output.textContent = `You said: ${command}`;
     executeCommand(command);
-    
-    // Restart recognition after getting a result
-    recognition.start(); // Keep listening
+
+    // Stop listening after the command is executed
+    recognition.stop();
+
+    // Restart listening after a 5ms delay
+    setTimeout(() => {
+        recognition.start();
+    }, 5);
 };
 
 // Handle errors
 recognition.onerror = (event) => {
     output.textContent = `Error occurred in recognition: ${event.error}`;
-    // Restart recognition on error
-    recognition.start();
+    
+    // Restart recognition after a 5ms delay in case of error
+    setTimeout(() => {
+        recognition.start();
+    }, 5);
 };
 
 // Function to execute commands
