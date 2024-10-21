@@ -31,6 +31,14 @@
             const url = parts[0];
             const searchQuery = parts.slice(1).join(' ');
 
+            // Check if the command is to close the browser
+            if (command === "close browser") {
+                speak("Closing the browser");
+                window.close(); // Attempt to close the current window/tab
+                return;
+            }
+
+            // Handle opening URLs and search queries
             if (url.includes('.com')) {
                 const finalUrl = url.includes('http') ? url : 'https://' + url;
 
